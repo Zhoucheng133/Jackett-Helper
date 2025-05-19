@@ -7,6 +7,7 @@ const saltRounds=10;
 
 export class Auth {
   // 【通用】检查header登录状态
+  // 【GET】检查JWT是否合法 (header: token)
   async headerCheck(headers: any, jwt: any): Promise<ResponseBody>{
     if (!headers || !headers.token) {
       return ToResponseBody(false, "参数不正确");
@@ -27,7 +28,7 @@ export class Auth {
     return ToResponseBody(true, rowCount.count === 0);
   }
 
-  // 【POST】注册 (body: username&password)
+  // 【POST】注册 (body: username & password)
   register(body: any, db: Database): ResponseBody{
     const rowCount = db
       .prepare("SELECT COUNT(*) AS count FROM user")
@@ -51,5 +52,21 @@ export class Auth {
     } catch (error) {
       return ToResponseBody(false, error)
     }
+  }
+
+  // 【POST】登录 (body: username & password)
+  async login(body: any, db: Database, jwt: any): Promise<ResponseBody>{
+    if (!body || !body.username || !body.password) {
+      return ToResponseBody(false, "参数不正确");
+    }
+    const { username, password } = body;
+    const data = db.prepare("SELECT password FROM user WHERE username = ?").get(username) as any;
+    if(!data){
+      return ToResponseBody(false, "用户名或密码不正确");
+    }else if(bcrypt.compareSync(password, data.password)){
+      const token=await jwt.sign({ username });
+      return ToResponseBody(true, token)
+    }
+    return ToResponseBody(false, "用户名或密码不正确");
   }
 }

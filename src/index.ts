@@ -12,8 +12,8 @@ const db = new Database('db/database.db');
 initDB(db);
 
 // 在生产模式下使用nanoid随机生成jwt密钥
-const JWT_SECRET = nanoid();
-// const JWT_SECRET='connector';
+// const JWT_SECRET = nanoid();
+const JWT_SECRET='connector';
 
 const app=new Elysia()
 .use(cors())
@@ -37,7 +37,9 @@ const app=new Elysia()
   }
 })
 .get("/api/init", () => auth.checkInit(db))
-.post("/api/register", ({body})=>auth.register(body, db))
+.get("/api/auth", ({headers, jwt}) => auth.headerCheck(headers, jwt))
+.post("/api/register", ({ body }) => auth.register(body, db))
+.post("/api/login", ({ body, jwt }) => auth.login(body, db, jwt))
 
 .listen(3000);
 
