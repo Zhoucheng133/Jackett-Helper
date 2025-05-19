@@ -3,8 +3,13 @@ import { cors } from '@elysiajs/cors'
 import jwt from "@elysiajs/jwt";
 import { nanoid } from "nanoid";
 import { Auth } from "./utils/auth";
+import Database from "bun:sqlite";
+import { initDB } from "./utils/static";
 
 const auth=new Auth();
+
+const db = new Database('db/database.db');
+initDB(db);
 
 // 在生产模式下使用nanoid随机生成jwt密钥
 const JWT_SECRET = nanoid();
@@ -31,7 +36,7 @@ const app=new Elysia()
     }
   }
 })
-.get("/", () => "Hello Elysia")
+.get("/api/init", () => auth.checkInit(db))
 
 .listen(3000);
 
