@@ -37,6 +37,7 @@ const app=new Elysia()
   }
 })
 .get("/api/init", () => auth.checkInit(db))
+.post("/api/register", ({body})=>auth.register(body, db))
 
 .listen(3000);
 
