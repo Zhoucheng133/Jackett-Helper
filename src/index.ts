@@ -5,8 +5,10 @@ import { nanoid } from "nanoid";
 import { Auth } from "./utils/auth";
 import Database from "bun:sqlite";
 import { initDB } from "./utils/static";
+import { List } from "./utils/list";
 
 const auth=new Auth();
+const list=new List();
 
 const db = new Database('db/database.db');
 initDB(db);
@@ -40,6 +42,9 @@ const app=new Elysia()
 .get("/api/auth", ({headers, jwt}) => auth.headerCheck(headers, jwt))
 .post("/api/register", ({ body }) => auth.register(body, db))
 .post("/api/login", ({ body, jwt }) => auth.login(body, db, jwt))
+
+.post("/api/list/add", ({ body }) => list.add(body, db))
+.delete("/api/list/del/:id", ({ params: { id } }) => list.del(id, db))
 
 .listen(3000);
 
