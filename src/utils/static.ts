@@ -12,6 +12,7 @@ export function ToResponseBody(ok: boolean, msg: any): ResponseBody{
 export function initDB(db: Database){
   initUserDB(db);
   initListDB(db);
+  initAriaDB(db);
 }
 
 function initUserDB(db: Database){
@@ -28,7 +29,18 @@ function initListDB(db: Database){
   db.prepare(`
     CREATE TABLE IF NOT EXISTS list (
       id TEXT PRIMARY KEY,
-      url TEXT
+      url TEXT,
+      key TEXT
+    )
+  `).run()
+}
+
+function initAriaDB(db: Database){
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS aria (
+      id TEXT PRIMARY KEY,
+      url TEXT,
+      secret TEXT
     )
   `).run()
 }
