@@ -72,4 +72,14 @@ export class List{
     }
     return ToResponseBody(true, "");
   }
+
+  // 【GET】获取所有列表
+  get(db: Database): ResponseBody{
+    try {
+      const list=db.prepare(`SELECT * FROM list`).all() as ListItem[];
+      return ToResponseBody(true, list);
+    } catch (error) {
+      return ToResponseBody(false, error);
+    }
+  }
 }
