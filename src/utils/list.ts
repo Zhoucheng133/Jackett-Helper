@@ -28,8 +28,30 @@ export class List{
   }
 
   del(id: string, db: Database): ResponseBody{
+    const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
+    if (!existingItem) {
+      return ToResponseBody(false, "不存在的项");
+    }
     try {
       db.prepare(`DELETE FROM list WHERE id = ?`).run(id);
+    } catch (error) {
+      return ToResponseBody(false, error);
+    }
+    return ToResponseBody(true, "");
+  }
+
+  edit(id: string, body: any, db: Database): ResponseBody{
+    if (!body || !body.data) {
+      return ToResponseBody(false, "参数不正确");
+    }
+    const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
+    if (!existingItem) {
+      return ToResponseBody(false, "不存在的项");
+    }
+
+    try {
+      const data=body.data as string;
+      db.prepare(`UPDATE list SET url = ? WHERE id = ?`).run(data, id);
     } catch (error) {
       return ToResponseBody(false, error);
     }

@@ -45,6 +45,7 @@ const app=new Elysia()
 
 .post("/api/list/add", ({ body }) => list.add(body, db))
 .delete("/api/list/del/:id", ({ params: { id } }) => list.del(id, db))
+.post("/api/list/edit/:id", ({ params: { id }, body }) => list.edit(id, body, db))
 
 .listen(3000);
 
