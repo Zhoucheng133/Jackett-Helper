@@ -38,7 +38,7 @@ function initListDB(db: Database){
 function initAriaDB(db: Database){
   db.prepare(`
     CREATE TABLE IF NOT EXISTS aria (
-      id TEXT PRIMARY KEY,
+      id INTEGER PRIMARY KEY CHECK (id = 1),
       url TEXT,
       secret TEXT
     )

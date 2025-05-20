@@ -6,9 +6,11 @@ import { Auth } from "./utils/auth";
 import Database from "bun:sqlite";
 import { initDB } from "./utils/static";
 import { List } from "./utils/list";
+import { Aria } from "./utils/aria";
 
 const auth=new Auth();
 const list=new List();
+const aria=new Aria();
 
 const db = new Database('db/database.db');
 initDB(db);
@@ -46,6 +48,8 @@ const app=new Elysia()
 .post("/api/list/add", ({ body }) => list.add(body, db))
 .delete("/api/list/del/:id", ({ params: { id } }) => list.del(id, db))
 .post("/api/list/edit/:id", ({ params: { id }, body }) => list.edit(id, body, db))
+
+.post("/api/aria/config", ({ body }) => aria.config(body, db))
 
 .listen(3000);
 
