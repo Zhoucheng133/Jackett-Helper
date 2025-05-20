@@ -11,6 +11,7 @@ export function ToResponseBody(ok: boolean, msg: any): ResponseBody{
 
 export function initDB(db: Database){
   initUserDB(db);
+  initListDB(db);
 }
 
 function initUserDB(db: Database){
@@ -19,6 +20,15 @@ function initUserDB(db: Database){
       id TEXT PRIMARY KEY,
       username TEXT,
       password TEXT
+    )
+  `).run()
+}
+
+function initListDB(db: Database){
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS list (
+      id TEXT PRIMARY KEY,
+      url TEXT
     )
   `).run()
 }
