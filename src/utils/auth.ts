@@ -5,6 +5,11 @@ import bcrypt from 'bcrypt';
 
 const saltRounds=10;
 
+interface UserItem{
+  username: string,
+  password: string,
+}
+
 export class Auth {
   // 【通用】检查header登录状态
   // 【GET】检查JWT是否合法 (header: token)
@@ -28,7 +33,7 @@ export class Auth {
     return ToResponseBody(true, rowCount.count === 0);
   }
 
-  // 【POST】注册 (body: username & password)
+  // 【POST】注册 (body -> UserItem)
   register(body: any, db: Database): ResponseBody{
     const rowCount = db
       .prepare("SELECT COUNT(*) AS count FROM user")
@@ -39,7 +44,7 @@ export class Auth {
     if (!body || !body.username || !body.password) {
       return ToResponseBody(false, "参数不正确");
     }
-    const { username, password } = body;
+    const { username, password } = body as UserItem;
     try {
       const existingUser = db.prepare("SELECT * FROM user WHERE username = ?").get(username);
       if (existingUser) {
@@ -54,12 +59,12 @@ export class Auth {
     }
   }
 
-  // 【POST】登录 (body: username & password)
+  // 【POST】登录 (body: UserItem)
   async login(body: any, db: Database, jwt: any): Promise<ResponseBody>{
     if (!body || !body.username || !body.password) {
       return ToResponseBody(false, "参数不正确");
     }
-    const { username, password } = body;
+    const { username, password } = body as UserItem;
     const data = db.prepare("SELECT password FROM user WHERE username = ?").get(username) as any;
     if(!data){
       return ToResponseBody(false, "用户名或密码不正确");

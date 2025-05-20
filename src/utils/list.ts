@@ -8,13 +8,17 @@ interface ListItem{
 }
 
 export class List{
+
+  // 【POST】添加一个项 (body -> ListItem[])
   add(body: any, db: Database): ResponseBody{
-    if (!body || !body.data) {
+    if(!Array.isArray(body)){
       return ToResponseBody(false, "参数不正确");
     }
-
     try {
-      const data: ListItem[]=body.data as ListItem[];
+      if(body.length==0){ 
+        return ToResponseBody(false, "参数不正确")
+      }
+      const data: ListItem[]=body as ListItem[];
       for (const element of data) {
         if(element.key && element.url ){
           const existingItem = db.prepare("SELECT * FROM list WHERE url = ?").get(element.url);
@@ -36,6 +40,7 @@ export class List{
     }
   }
 
+  // 【DELETE】删除一个项 (/:id)
   del(id: string, db: Database): ResponseBody{
     const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
     if (!existingItem) {
@@ -49,19 +54,16 @@ export class List{
     return ToResponseBody(true, "");
   }
 
+  // 【POST】编辑一个项 (body -> ListItem)
   edit(id: string, body: any, db: Database): ResponseBody{
-    if (!body || !body.data) {
-      return ToResponseBody(false, "参数不正确");
-    }
     const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
     if (!existingItem) {
       return ToResponseBody(false, "不存在的项");
     }
 
     try {
-      const data=body.data as ListItem;
-      if(data.key && data.url){
-        db.prepare(`UPDATE list SET url = ?, key = ? WHERE id = ?`).run(data.url, data.key, id);
+      if(body.key && body.url){
+        db.prepare(`UPDATE list SET url = ?, key = ? WHERE id = ?`).run(body.url, body.key, id);
       }else{
         return ToResponseBody(false, "参数不正确")
       }
