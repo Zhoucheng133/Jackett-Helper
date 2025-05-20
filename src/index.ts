@@ -51,6 +51,7 @@ const app=new Elysia()
 .get("/api/list/get", () => list.get(db))
 
 .post("/api/aria/config", ({ body }) => aria.config(body, db))
+.get("/api/aria/get", () => aria.get(db))
 
 .listen(3000);
 
