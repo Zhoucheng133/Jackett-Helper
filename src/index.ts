@@ -7,10 +7,12 @@ import Database from "bun:sqlite";
 import { initDB } from "./utils/static";
 import { List } from "./utils/list";
 import { Aria } from "./utils/aria";
+import { Handler } from "./utils/handler";
 
 const auth=new Auth();
 const list=new List();
 const aria=new Aria();
+const handler=new Handler();
 
 const db = new Database('db/database.db');
 initDB(db);
@@ -52,6 +54,8 @@ const app=new Elysia()
 
 .post("/api/aria/config", ({ body }) => aria.config(body, db))
 .get("/api/aria/get", () => aria.get(db))
+
+.get("/api/handler/all/:id", ({ params: { id }}) => handler.getAllFromId(id, db))
 
 .listen(3000);
 

@@ -2,7 +2,7 @@ import Database from "bun:sqlite";
 import { ResponseBody, ToResponseBody } from "./static";
 import { nanoid } from "nanoid";
 
-interface ListItem{
+export interface ListItem{
   id?: string,
   url: string,
   key: string
@@ -61,7 +61,6 @@ export class List{
     if (!existingItem) {
       return ToResponseBody(false, "不存在的项");
     }
-
     try {
       if(body.key && body.url){
         db.prepare(`UPDATE list SET url = ?, key = ? WHERE id = ?`).run(body.url, body.key, id);
