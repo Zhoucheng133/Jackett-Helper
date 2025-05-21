@@ -3,6 +3,7 @@ import { ResponseBody, ToResponseBody } from "./static";
 import { nanoid } from "nanoid";
 
 interface ListItem{
+  id?: string,
   url: string,
   key: string
 }
