@@ -55,7 +55,8 @@ const app=new Elysia()
 .post("/api/aria/config", ({ body }) => aria.config(body, db))
 .get("/api/aria/get", () => aria.get(db))
 
-.get("/api/handler/all/:id", ({ params: { id }}) => handler.getAllFromId(id, db))
+.get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id, db))
+.get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, db, query))
 
 .listen(3000);
 
