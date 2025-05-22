@@ -1,4 +1,4 @@
-# Jackett Aria Connector
+# Jackett Helper
 
 这是一个将Jackett链接添加到Aria任务的工具
 
