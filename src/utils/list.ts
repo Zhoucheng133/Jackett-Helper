@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 
 export interface ListItem{
   id?: string,
+  name: string,
   url: string,
   key: string
 }
@@ -32,8 +33,8 @@ export class List{
       }
       data.forEach((item: ListItem)=>{
         const id=nanoid();
-        db.prepare("INSERT INTO list (id, url, key) VALUES (?, ?, ?)")
-          .run(id, item.url, item.key);
+        db.prepare("INSERT INTO list (id, url, name, key) VALUES (?, ?, ?, ?)")
+          .run(id, item.url, item.name, item.key);
       })
       return ToResponseBody(true, "");
     } catch (error) {
@@ -61,9 +62,10 @@ export class List{
     if (!existingItem) {
       return ToResponseBody(false, "不存在的项");
     }
+    body=body as ListItem
     try {
-      if(body.key && body.url){
-        db.prepare(`UPDATE list SET url = ?, key = ? WHERE id = ?`).run(body.url, body.key, id);
+      if(body.key && body.url && body.name){
+        db.prepare(`UPDATE list SET url = ?, name = ?, key = ? WHERE id = ?`).run(body.url, body.name, body.key, id);
       }else{
         return ToResponseBody(false, "参数不正确")
       }

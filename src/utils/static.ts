@@ -29,6 +29,7 @@ function initListDB(db: Database){
   db.prepare(`
     CREATE TABLE IF NOT EXISTS list (
       id TEXT PRIMARY KEY,
+      name TEXT,
       url TEXT,
       key TEXT
     )
