@@ -41,9 +41,9 @@ export class Handler{
         let list: HandlerItem[]=[];
         for (const element of items) {
           list.push({
-            title: element.title,
-            pubDate: element.pubDate,
-            torrent: element.guid,
+            title: element.title[0],
+            pubDate: element.pubDate[0],
+            torrent: element.guid[0],
             magnet: element['torznab:attr'][5]['$'].value,
           })
         }
