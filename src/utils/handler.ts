@@ -9,6 +9,7 @@ interface HandlerItem{
   torrent: string,
   magnet: string,
   pubDate: string,
+  size: number,
 }
 
 interface SearchQuery{
@@ -18,7 +19,7 @@ interface SearchQuery{
 export class Handler{
   // 【GET】获取某个id的所有项
   async getAllFromId(id: string, db: Database): Promise<ResponseBody>{
-    const data: ListItem=db.prepare(`SELECT url, key FROM list WHERE id = ?`).get(id) as ListItem;
+    const data: ListItem=db.prepare(`SELECT url, key, name FROM list WHERE id = ?`).get(id) as ListItem;
     if(data){
       const url=`${data.url}?apikey=${data.key}`;
       const {data: response}=await axios.get(url);
@@ -45,9 +46,13 @@ export class Handler{
             pubDate: element.pubDate[0],
             torrent: element.guid[0],
             magnet: element['torznab:attr'][5]['$'].value,
+            size: parseInt(element.size[0])
           })
         }
-        return ToResponseBody(true, list);
+        return ToResponseBody(true, {
+          name: data.name,
+          data: list
+        });
       } catch (error) {
         return ToResponseBody(false, error);
       }
@@ -86,6 +91,7 @@ export class Handler{
             pubDate: element.pubDate,
             torrent: element.guid,
             magnet: element['torznab:attr'][5]['$'].value,
+            size: parseInt(element.size[0])
           })
         }
         return ToResponseBody(true, list);
