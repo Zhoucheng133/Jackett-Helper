@@ -9,13 +9,12 @@ import { List } from "./utils/list";
 import { Aria } from "./utils/aria";
 import { Handler } from "./utils/handler";
 
-const auth=new Auth();
-const list=new List();
-const aria=new Aria();
-const handler=new Handler();
-
 const db = new Database('db/database.db');
 initDB(db);
+const auth=new Auth();
+const list=new List();
+const aria=new Aria(db);
+const handler=new Handler();
 
 // 在生产模式下使用nanoid随机生成jwt密钥
 // const JWT_SECRET = nanoid();
