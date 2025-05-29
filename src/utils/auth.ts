@@ -11,6 +11,9 @@ interface UserItem{
 }
 
 export class Auth {
+
+  constructor(private db: Database){}
+
   // 【通用】检查header登录状态
   // 【GET】检查JWT是否合法 (header: token)
   async headerCheck(headers: any, jwt: any): Promise<ResponseBody>{
@@ -26,16 +29,16 @@ export class Auth {
   }
 
   // 【GET】检查是否需要先注册账户 (true -> 需要)
-  checkInit(db: Database): ResponseBody{
-    const rowCount = db
+  checkInit(): ResponseBody{
+    const rowCount = this.db
       .prepare("SELECT COUNT(*) AS count FROM user")
       .get() as { count: number };
     return ToResponseBody(true, rowCount.count === 0);
   }
 
   // 【POST】注册 (body -> UserItem)
-  register(body: any, db: Database): ResponseBody{
-    const rowCount = db
+  register(body: any): ResponseBody{
+    const rowCount = this.db
       .prepare("SELECT COUNT(*) AS count FROM user")
       .get() as { count: number };
     if(rowCount.count != 0){
@@ -46,12 +49,12 @@ export class Auth {
     }
     const { username, password } = body as UserItem;
     try {
-      const existingUser = db.prepare("SELECT * FROM user WHERE username = ?").get(username);
+      const existingUser = this.db.prepare("SELECT * FROM user WHERE username = ?").get(username);
       if (existingUser) {
         return ToResponseBody(false, "用户名已存在");
       }
       const id=nanoid();
-      db.prepare("INSERT INTO user (id, username, password) VALUES (?, ?, ?)")
+      this.db.prepare("INSERT INTO user (id, username, password) VALUES (?, ?, ?)")
         .run(id, username, bcrypt.hashSync(password, saltRounds));
       return ToResponseBody(true, "");
     } catch (error) {
@@ -60,12 +63,12 @@ export class Auth {
   }
 
   // 【POST】登录 (body: UserItem)
-  async login(body: any, db: Database, jwt: any): Promise<ResponseBody>{
+  async login(body: any, jwt: any): Promise<ResponseBody>{
     if (!body || !body.username || !body.password) {
       return ToResponseBody(false, "参数不正确");
     }
     const { username, password } = body as UserItem;
-    const data = db.prepare("SELECT password FROM user WHERE username = ?").get(username) as any;
+    const data = this.db.prepare("SELECT password FROM user WHERE username = ?").get(username) as any;
     if(!data){
       return ToResponseBody(false, "用户名或密码不正确");
     }else if(bcrypt.compareSync(password, data.password)){

@@ -11,8 +11,10 @@ export interface ListItem{
 
 export class List{
 
+  constructor(private db: Database){}
+
   // 【POST】添加一个项 (body -> ListItem[])
-  add(body: any, db: Database): ResponseBody{
+  add(body: any): ResponseBody{
     if(!Array.isArray(body)){
       return ToResponseBody(false, "参数不正确");
     }
@@ -23,7 +25,7 @@ export class List{
       const data: ListItem[]=body as ListItem[];
       for (const element of data) {
         if(element.key && element.url ){
-          const existingItem = db.prepare("SELECT * FROM list WHERE url = ?").get(element.url);
+          const existingItem = this.db.prepare("SELECT * FROM list WHERE url = ?").get(element.url);
           if (existingItem) {
             return ToResponseBody(false, "已存在的项目");
           }
@@ -33,7 +35,7 @@ export class List{
       }
       data.forEach((item: ListItem)=>{
         const id=nanoid();
-        db.prepare("INSERT INTO list (id, url, name, key) VALUES (?, ?, ?, ?)")
+        this.db.prepare("INSERT INTO list (id, url, name, key) VALUES (?, ?, ?, ?)")
           .run(id, item.url, item.name, item.key);
       })
       return ToResponseBody(true, "");
@@ -43,13 +45,13 @@ export class List{
   }
 
   // 【DELETE】删除一个项 (/:id)
-  del(id: string, db: Database): ResponseBody{
-    const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
+  del(id: string): ResponseBody{
+    const existingItem = this.db.prepare("SELECT * FROM list WHERE id = ?").get(id);
     if (!existingItem) {
       return ToResponseBody(false, "不存在的项");
     }
     try {
-      db.prepare(`DELETE FROM list WHERE id = ?`).run(id);
+      this.db.prepare(`DELETE FROM list WHERE id = ?`).run(id);
     } catch (error) {
       return ToResponseBody(false, error);
     }
@@ -57,15 +59,15 @@ export class List{
   }
 
   // 【POST】编辑一个项 (body -> ListItem)
-  edit(id: string, body: any, db: Database): ResponseBody{
-    const existingItem = db.prepare("SELECT * FROM list WHERE id = ?").get(id);
+  edit(id: string, body: any): ResponseBody{
+    const existingItem = this.db.prepare("SELECT * FROM list WHERE id = ?").get(id);
     if (!existingItem) {
       return ToResponseBody(false, "不存在的项");
     }
     body=body as ListItem
     try {
       if(body.key && body.url && body.name){
-        db.prepare(`UPDATE list SET url = ?, name = ?, key = ? WHERE id = ?`).run(body.url, body.name, body.key, id);
+        this.db.prepare(`UPDATE list SET url = ?, name = ?, key = ? WHERE id = ?`).run(body.url, body.name, body.key, id);
       }else{
         return ToResponseBody(false, "参数不正确")
       }
@@ -76,9 +78,9 @@ export class List{
   }
 
   // 【GET】获取所有列表
-  get(db: Database): ResponseBody{
+  get(): ResponseBody{
     try {
-      const list=db.prepare(`SELECT * FROM list`).all() as ListItem[];
+      const list=this.db.prepare(`SELECT * FROM list`).all() as ListItem[];
       return ToResponseBody(true, list);
     } catch (error) {
       return ToResponseBody(false, error);

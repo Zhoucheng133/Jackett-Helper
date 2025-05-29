@@ -17,9 +17,12 @@ interface SearchQuery{
 }
 
 export class Handler{
+
+  constructor(private db: Database){}
+
   // 【GET】获取某个id的所有项
-  async getAllFromId(id: string, db: Database): Promise<ResponseBody>{
-    const data: ListItem=db.prepare(`SELECT url, key, name FROM list WHERE id = ?`).get(id) as ListItem;
+  async getAllFromId(id: string): Promise<ResponseBody>{
+    const data: ListItem=this.db.prepare(`SELECT url, key, name FROM list WHERE id = ?`).get(id) as ListItem;
     if(data){
       const url=`${data.url}?apikey=${data.key}`;
       const {data: response}=await axios.get(url);
@@ -61,11 +64,11 @@ export class Handler{
   }
 
   // 【GET】在某个id中搜索某个关键词
-  async searchById(id: string, db: Database, query: SearchQuery): Promise<ResponseBody>{
+  async searchById(id: string, query: SearchQuery): Promise<ResponseBody>{
     if(!query.q){
       return ToResponseBody(false, "参数不正确");
     }
-    const data: ListItem=db.prepare(`SELECT url, key FROM list WHERE id = ?`).get(id) as ListItem;
+    const data: ListItem=this.db.prepare(`SELECT url, key FROM list WHERE id = ?`).get(id) as ListItem;
     if(data){
       const url=`${data.url}?apikey=${data.key}&t=search&q=${query.q}`;
       const {data: response}=await axios.get(url);

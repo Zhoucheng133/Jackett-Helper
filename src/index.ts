@@ -11,10 +11,10 @@ import { Handler } from "./utils/handler";
 
 const db = new Database('db/database.db');
 initDB(db);
-const auth=new Auth();
-const list=new List();
+const auth=new Auth(db);
+const list=new List(db);
 const aria=new Aria(db);
-const handler=new Handler();
+const handler=new Handler(db);
 
 // 在生产模式下使用nanoid随机生成jwt密钥
 // const JWT_SECRET = nanoid();
@@ -41,21 +41,21 @@ const app=new Elysia()
     }
   }
 })
-.get("/api/init", () => auth.checkInit(db))
+.get("/api/init", () => auth.checkInit())
 .get("/api/auth", ({headers, jwt}) => auth.headerCheck(headers, jwt))
-.post("/api/register", ({ body }) => auth.register(body, db))
-.post("/api/login", ({ body, jwt }) => auth.login(body, db, jwt))
+.post("/api/register", ({ body }) => auth.register(body))
+.post("/api/login", ({ body, jwt }) => auth.login(body, jwt))
 
-.post("/api/list/add", ({ body }) => list.add(body, db))
-.delete("/api/list/del/:id", ({ params: { id } }) => list.del(id, db))
-.post("/api/list/edit/:id", ({ params: { id }, body }) => list.edit(id, body, db))
-.get("/api/list/get", () => list.get(db))
+.post("/api/list/add", ({ body }) => list.add(body))
+.delete("/api/list/del/:id", ({ params: { id } }) => list.del(id))
+.post("/api/list/edit/:id", ({ params: { id }, body }) => list.edit(id, body))
+.get("/api/list/get", () => list.get())
 
-.post("/api/aria/config", ({ body }) => aria.config(body, db))
+.post("/api/aria/config", ({ body }) => aria.config(body))
 .get("/api/aria/get", () => aria.get())
 
-.get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id, db))
-.get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, db, query))
+.get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id))
+.get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, query))
 
 .listen(3000);
 
