@@ -42,7 +42,7 @@ export class Aria{
   }
 
   // 【GET】获取Aria配置
-  get(db: Database): ResponseBody{
+  get(): ResponseBody{
     return {
       ok: true,
       msg: this.ariaConfig,
