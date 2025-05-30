@@ -68,7 +68,7 @@ export class Handler{
     if(!query.q){
       return ToResponseBody(false, "参数不正确");
     }
-    const data: ListItem=this.db.prepare(`SELECT url, key FROM list WHERE id = ?`).get(id) as ListItem;
+    const data: ListItem=this.db.prepare(`SELECT url, key, name FROM list WHERE id = ?`).get(id) as ListItem;
     if(data){
       const url=`${data.url}?apikey=${data.key}&t=search&q=${query.q}`;
       const {data: response}=await axios.get(url);
@@ -90,14 +90,17 @@ export class Handler{
         let list: HandlerItem[]=[];
         for (const element of items) {
           list.push({
-            title: element.title,
-            pubDate: element.pubDate,
-            torrent: element.guid,
+            title: element.title[0],
+            pubDate: element.pubDate[0],
+            torrent: element.guid[0],
             magnet: element['torznab:attr'][5]['$'].value,
             size: parseInt(element.size[0])
           })
         }
-        return ToResponseBody(true, list);
+        return ToResponseBody(true, {
+          name: data.name,
+          data: list
+        });
       } catch (error) {
         return ToResponseBody(false, error);
       }
