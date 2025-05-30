@@ -107,4 +107,16 @@ export class Handler{
     }
     return ToResponseBody(false, "指定id不存在")
   }
+
+  getNameFromId(id: string): ResponseBody{
+    try {
+      const data=this.db.prepare(`SELECT name FROM list WHERE id = ?`).get(id) as ListItem;
+      if(data.name){
+        return ToResponseBody(true, data.name);
+      }
+      return ToResponseBody(false, "指定id不存在");
+    } catch (error) {
+      return ToResponseBody(false, "指定id不存在");
+    }
+  }
 }

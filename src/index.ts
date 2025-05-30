@@ -57,6 +57,7 @@ const app=new Elysia()
 
 .get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id))
 .get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, query))
+.get("/api/handler/nameFromId/:id", ({ params: {id} }) => handler.getNameFromId(id))
 
 .listen(3000);
 
