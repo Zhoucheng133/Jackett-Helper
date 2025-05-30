@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, file } from "elysia";
 import { cors } from '@elysiajs/cors'
 import jwt from "@elysiajs/jwt";
 import { nanoid } from "nanoid";
@@ -58,6 +58,10 @@ const app=new Elysia()
 .get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id))
 .get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, query))
 .get("/api/handler/nameFromId/:id", ({ params: {id} }) => handler.getNameFromId(id))
+
+.get("/assets/:name", ({ params })=>file(`web/assets/${params.name.replaceAll("./", "")}`))
+.get("/icon.svg", ()=>file(`web/icon.svg`))
+.get("/*", ()=>file("web/index.html"))
 
 .listen(3000);
 
