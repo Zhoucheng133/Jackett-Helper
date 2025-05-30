@@ -53,6 +53,7 @@ const app=new Elysia()
 
 .post("/api/aria/config", ({ body }) => aria.config(body))
 .get("/api/aria/get", () => aria.get())
+.post("/api/aria/download", ({ body }) => aria.download(body))
 
 .get("/api/handler/all/:id", ({ params: { id } }) => handler.getAllFromId(id))
 .get("/api/handler/search/:id", ({ params: { id }, query }) => handler.searchById(id, query))
