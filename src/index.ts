@@ -1,5 +1,5 @@
 import { Elysia, file } from "elysia";
-import { cors } from '@elysiajs/cors'
+// import { cors } from '@elysiajs/cors'
 import jwt from "@elysiajs/jwt";
 import { nanoid } from "nanoid";
 import { Auth } from "./utils/auth";
@@ -17,11 +17,11 @@ const aria=new Aria(db);
 const handler=new Handler(db);
 
 // 在生产模式下使用nanoid随机生成jwt密钥
-// const JWT_SECRET = nanoid();
-const JWT_SECRET='connector';
+const JWT_SECRET = nanoid();
+// const JWT_SECRET='connector';
 
 const app=new Elysia()
-.use(cors())
+// .use(cors())
 .use(jwt({secret: JWT_SECRET, exp: "1y"}))
 
 .onBeforeHandle(async ({path, headers, jwt})=>{
